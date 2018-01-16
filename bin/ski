@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+require_relative '../lib/ski'
+require 'optparse'
+
+usage = "Usage: ski :project run :pipeline"
+
+# This will hold the options we parse
+options = {}
+
+OptionParser.new do |opts|
+  opts.on('-P', '--project PROJECT', 'Given project') do |project|
+    options[:project] = project
+  end
+  opts.on('-p', '--pipeline PIPELINE', 'Given pipeline') do |pipeline|
+    options[:pipeline] = pipeline
+  end
+end.parse!
+
+if options[:project].nil? || options[:pipeline].nil?
+  puts "ERROR: Either project or pipeline is not correctly set!"
+  exit 255
+end
+
+Ski::Ski.new(options[:project],options[:pipeline])
