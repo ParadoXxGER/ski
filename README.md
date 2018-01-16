@@ -8,7 +8,7 @@ Example setup:
 
 2. Add a file 'your-project.yml' to `.ski/`
 
-```
+``` yaml
 title: Your Project
 description: Hello World
 pipelines:
