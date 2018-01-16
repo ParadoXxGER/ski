@@ -1,8 +1,11 @@
 # Ski
 ### A automation framework made for portability
 
-Example setup:
+Installation:
 
+`gem install ski`
+
+Example setup:
 
 1. Create a `.ski/` directory in your project.
 
@@ -70,3 +73,6 @@ targets:
       password: :prompt
       ssh-key: true
 ```
+
+3. Run:
+`ski -P your-project -p build`
