@@ -6,7 +6,7 @@ Example setup:
 
 1. Create a `.ski/` directory in your project.
 
-2. Add a file 'your-project.yml' to `.ski/`
+2. Add a file `your-project.yml` to `.ski/`
 
 ``` yaml
 title: Your Project
