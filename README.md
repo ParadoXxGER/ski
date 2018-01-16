@@ -83,3 +83,4 @@ targets:
 * Add functionality for prompts (like configurable 'are you sure' etc)
 * Add functionality for variables (:prompts, :my_var etc)
 * Make use of pipeline targets in code
+* Add functionality for secrets and ssh keys (stored somewhere on a safe place not in your project dir)
