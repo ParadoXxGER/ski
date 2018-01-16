@@ -76,3 +76,10 @@ targets:
 
 3. Run:
 `ski -P your-project -p build`
+
+# Todo
+
+* Add functionality for remote tasks
+* Add functionality for prompts (like configurable 'are you sure' etc)
+* Add functionality for variables (:prompts, :my_var etc)
+* Make use of pipeline targets in code
