@@ -1,0 +1,38 @@
+title:
+description:
+pipelines:
+  build:
+    description:
+    fail-fast:
+    interactive:
+    target:
+    tasks:
+      show-all-local-files:
+        description:
+        command:
+      show-space-used:
+        description:
+        command:
+      ping-google:
+        description:
+        command:
+      check-processes:
+        description:
+        command:
+      check-ruby-version:
+        description:
+        command:
+    then:
+      greet:
+        description:
+        command:
+    catch:
+      greet:
+        description:
+        command:
+targets:
+  local:
+    ip:
+    username:
+    password:
+    ssh-key:
