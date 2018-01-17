@@ -9,56 +9,59 @@ module Ski
     attr_reader :credentials
 
     def initialize(config)
+      @targets = config.dig('targets')
       @title = config.dig('title')
       @description = config.dig('description')
       @pipelines = config.dig('pipelines')
       @credentials = config.dig('pipelines')
+      @interactive = config.dig('interactive')
       @fail = false
-      puts "PROJECT: #{@title}"
-      puts "DESCRIPTION: #{@description}"
-      puts "PIPELINES:"
-      @pipelines.each do |pipeline|
-        puts "  ID: #{pipeline.dig('pipeline', 'id')}"
-        puts "  DESCRIPTION: #{pipeline.dig('pipeline', 'description')}"
-        puts "  TASKS: #{pipeline.dig('pipeline', 'tasks').count}"
-      end
     end
 
-    def kick_off(pipeline_id)
-      @pipeline = @pipelines.find { |pipeline| pipeline.dig('pipeline', 'id') == pipeline_id }
+    def kick_off(pipeline_name)
+      @pipeline = @pipelines.dig(pipeline_name) || nil
+      if @pipeline.nil?
+        puts 'ERROR: Pipeline does not exist!'
+        exit 255
+      end
+      puts "PROJECT: #{@title}"
+      puts "DESCRIPTION: #{@description}"
+      puts "PIPELINE: #{pipeline_name}"
+      puts "DESCRIPTION: #{@pipeline.dig('description')}"
+      puts "TASKS: #{@pipeline.dig('tasks').count}"
       run(tasks, 'TASK:')
       if @fail
-        run(error_tasks, 'ERROR:')
+        run(error_tasks, 'CATCH:')
       else
-        run(success_tasks, 'SUCCESS:')
+        run(success_tasks, 'THEN:')
       end
     end
 
     private
 
     def error_tasks
-      @pipeline.dig('pipeline','on-error', 'tasks') || []
+      @pipeline.dig('catch') || []
     end
 
     def success_tasks
-      @pipeline.dig('pipeline','on-success', 'tasks') || []
+      @pipeline.dig('then') || []
     end
 
     def tasks
-      @pipeline.dig('pipeline', 'tasks') || []
+      @pipeline.dig('tasks') || []
     end
 
     def ff
-      @pipeline.dig('pipeline', 'fail-fast') || true
+      @pipeline.dig('fail-fast') || true
     end
 
     def run(tasks, prefix)
-      tasks.each_with_index do |task, index|
-        puts "************ #{prefix} Running: #{index+1}/#{tasks.count} #{task.dig('task', 'name')} ************"
-        stdout, stderr, status = Open3.capture3(task.dig('task', 'command').to_s)
+      tasks.each do |key, value|
+        puts "************ #{prefix} Running: #{key} ************"
+        stdout, stderr, status = Open3.capture3(value.dig('command').to_s)
         if status.exitstatus != 0
           @fail = true
-          puts "ERROR: #{stderr}"
+          puts "STDERR: #{status.exitstatus} #{ stderr if stderr != ''}"
           break if ff
         end
         puts stdout
