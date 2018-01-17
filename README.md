@@ -12,66 +12,62 @@ Example setup:
 2. Add a file `your-project.yml` to `.ski/`
 
 ``` yaml
-title: Your Project
+title: Bonumco
 description: Hello World
 pipelines:
-  - pipeline:
-      id: build
-      description: Build local docker images
-      fail-fast: true
-      target: :local
-      tasks:
-        - task:
-            name: Show all local files
-            command: ls .
-        - task:
-            name: Space used
-            command: du -sch .
-        - task:
-            name: Ping google exactly one time
-            command: ping google.de -t 1
-        - task:
-            name: Check processes running of port 3000
-            command: lsof -i :3000
-        - task:
-            name: Check ruby version
-            command: ruby -v
-      on-success:
-        tasks:
-          - task:
-              name: Wish a happy day
-              command: echo 'Hey dear, the deployment was successfull. Have a nice day! :)'
-      on-error:
-        tasks:
-          - task:
-              name: Build App server
-              command: echo 'Hello World'
-  - pipeline:
-      id: deploy
-      description: Build local docker images
-      fail-fast: true
-      target: :local
-      tasks:
-        - task:
-            name: Deploy to prod
-            command: echo 'Deploy to prod'
-      on-success:
-        tasks:
-          - task:
-              name: Build App server
-              command: echo 'Hello World'
-      on-error:
-        tasks:
-          - task:
-              name: Build App server
-              command: echo 'Hello World'
+  build:
+    description: Build local docker images
+    fail-fast: false
+    interactive: false
+    target: :local
+    workdir: .
+    tasks:
+      show-all-local-files:
+        description: Show all local files
+        command: ls .
+      show-space-used:
+        description: Show the whole space
+        command: du -sch .
+      sleep-5:
+        description: Ping google exactly one time
+        command: sleep 5
+      check-processes:
+        description: Check processes running of port 3000
+        command: lsof -i :3000
+      check-ruby-version:
+        description: Check ruby version
+        command: ruby -v
+    then:
+      greet:
+        description: Wish a happy day
+        command: echo 'Hey dear, the deployment was successfull. Have a nice day! :)'
+    catch:
+      rollback:
+        description: Rolling back actions
+        command: echo 'Oooops, something went wrong!'
+  deployment:
+    description: Deploy things
+    interactive: true
+    fail-fast: true
+    target: :local
+    tasks:
+      deploy-to-production:
+        description: Deploy to production
+        command: echo 'Bam bam production!'
+    then:
+      greet:
+        description: Wish a happy day
+        command: echo 'Hey dear, the deployment was successfull. Have a nice day! :)'
+    catch:
+      greet:
+        description: Wish a happy day
+        command: echo 'Hey dear, the deployment was successfull. Have a nice day! :)'
 targets:
-  - target:
-      name: local
-      ip: 192.168.0.1
-      username: root
-      password: :prompt
-      ssh-key: true
+  local:
+    ip: 192.168.0.1
+    username: root
+    password: :prompt
+    ssh-key: true
 ```
 
 3. Run:
