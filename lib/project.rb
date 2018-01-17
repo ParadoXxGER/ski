@@ -1,3 +1,4 @@
+require 'open3'
 require_relative 'missing_attribute_error'
 
 module Ski
@@ -12,68 +13,57 @@ module Ski
       @description = config.dig('description')
       @pipelines = config.dig('pipelines')
       @credentials = config.dig('pipelines')
-      @ff = config.dig('pipelines')
-      @errors = []
+      @fail = false
+      puts "PROJECT: #{@title}"
+      puts "DESCRIPTION: #{@description}"
+      puts "PIPELINES:"
+      @pipelines.each do |pipeline|
+        puts "  ID: #{pipeline.dig('pipeline', 'id')}"
+        puts "  DESCRIPTION: #{pipeline.dig('pipeline', 'description')}"
+        puts "  TASKS: #{pipeline.dig('pipeline', 'tasks').count}"
+      end
     end
 
     def kick_off(pipeline_id)
       @pipeline = @pipelines.find { |pipeline| pipeline.dig('pipeline', 'id') == pipeline_id }
-      run_tasks
-      if @errors.count.zero?
-        run_on_success
+      run(tasks, 'TASK:')
+      if @fail
+        run(error_tasks, 'ERROR:')
       else
-        run_on_error
+        run(success_tasks, 'SUCCESS:')
       end
     end
 
     private
 
-    def run_on_error
-      @pipeline.dig('pipeline','on-error', 'tasks').each_with_index do |task, index|
-        puts "************ ON-ERROR: Running error task: #{index+1}/#{number_of_error_tasks} #{task.dig('task', 'name')} ************"
-        begin
-          output = system task.dig('task', 'command')
-        rescue SystemCallError
-          puts output
-          exit 255
+    def error_tasks
+      @pipeline.dig('pipeline','on-error', 'tasks') || []
+    end
+
+    def success_tasks
+      @pipeline.dig('pipeline','on-success', 'tasks') || []
+    end
+
+    def tasks
+      @pipeline.dig('pipeline', 'tasks') || []
+    end
+
+    def ff
+      @pipeline.dig('pipeline', 'fail-fast') || true
+    end
+
+    def run(tasks, prefix)
+      tasks.each_with_index do |task, index|
+        puts "************ #{prefix} Running: #{index+1}/#{tasks.count} #{task.dig('task', 'name')} ************"
+        stdout, stderr, status = Open3.capture3(task.dig('task', 'command').to_s)
+        if status.exitstatus != 0
+          @fail = true
+          puts "ERROR: #{stderr}"
+          break if ff
         end
+        puts stdout
       end
     end
 
-    def run_on_success
-      @pipeline.dig('pipeline','on-success', 'tasks').each_with_index do |task, index|
-        puts "************ ON-SUCCESS: Running success task: #{index+1}/#{number_of_success_tasks} #{task.dig('task', 'name')} ************"
-        begin
-          output = system task.dig('task', 'command')
-        rescue SystemCallError
-          puts output
-          exit 255
-        end
-      end
-    end
-
-    def number_of_tasks
-      @pipeline.dig('pipeline','tasks').count || 'ERROR'
-    end
-
-    def number_of_success_tasks
-      @pipeline.dig('pipeline','on-success', 'tasks').count || 'ERROR'
-    end
-
-    def number_of_error_tasks
-      @pipeline.dig('pipeline','on-error', 'tasks').count || 'ERROR'
-    end
-
-    def run_tasks
-      @pipeline.dig('pipeline','tasks').each_with_index do |task, index|
-        puts "************ INFO: Running task: #{index+1}/#{number_of_tasks} #{task.dig('task', 'name')} ************"
-        begin
-          output = system task.dig('task', 'command')
-        rescue SystemCallError
-          @errors << output
-          exit 255 if pipeline.dig('pipeline','fail-fast') == 'true'
-        end
-      end
-    end
   end
 end
