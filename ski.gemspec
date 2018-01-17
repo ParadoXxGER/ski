@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name        = 'ski'
-  s.version     = '0.0.2'
+  s.version     = '0.0.4'
   s.date        = '2018-01-16'
-  s.summary     = 'Automation framework'
-  s.description = 'Automation framework'
+  s.summary     = 'Automation framework made for portability'
+  s.description = 'README.md'
   s.authors     = ['Niklas Hanft']
   s.email       = 'niklas.hanft@outlook.com'
   s.files       = Dir["{bin,lib,modules,test}/**/*", "LICENSE", "Gemfile", "README.md"]
