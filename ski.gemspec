@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'ski'
-  s.version     = '0.0.4'
+  s.version     = '0.0.5'
   s.date        = '2018-01-16'
   s.summary     = 'Automation framework made for portability'
   s.description = 'README.md'
