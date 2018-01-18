@@ -14,7 +14,6 @@ module Ski
       @description = config.dig('description')
       @pipelines = config.dig('pipelines')
       @credentials = config.dig('pipelines')
-      @interactive = config.dig('interactive')
       @fail = false
     end
 
@@ -55,9 +54,23 @@ module Ski
       @pipeline.dig('fail-fast') || true
     end
 
+    def interactive?
+      @pipeline.dig('interactive') || true
+    end
+
+    def prompt_next
+      puts 'Run task? (yes/no)'
+      input = $stdin.gets.chomp
+      if input != 'yes'
+        puts 'INFO: Process aborted by user!'
+        exit 255
+      end
+    end
+
     def run(tasks, prefix)
       tasks.each do |key, value|
         puts "************ #{prefix} Running: #{key} ************"
+        prompt_next if interactive?
         stdout, stderr, status = Open3.capture3(value.dig('command').to_s)
         if status.exitstatus != 0
           @fail = true
