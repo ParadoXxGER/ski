@@ -51,11 +51,11 @@ module Ski
     end
 
     def ff
-      @pipeline.dig('fail-fast') || true
+      @pipeline.dig('fail-fast')
     end
 
     def interactive?
-      @pipeline.dig('interactive') || true
+      @pipeline.dig('interactive')
     end
 
     def prompt_next
@@ -68,8 +68,9 @@ module Ski
     end
 
     def run(tasks, prefix)
+      counter = 1
       tasks.each do |key, value|
-        puts "************ #{prefix} Running: #{key} ************"
+        puts "************ #{prefix} Running: #{key} (#{counter}/#{tasks.count}) ************"
         prompt_next if interactive?
         stdout, stderr, status = Open3.capture3(value.dig('command').to_s)
         if status.exitstatus != 0
@@ -78,6 +79,7 @@ module Ski
           break if ff
         end
         puts stdout
+        counter += 1
       end
     end
 
