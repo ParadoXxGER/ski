@@ -1,6 +1,14 @@
 # Ski
 ### A automation framework made for portability
 
+Features:
+
+- Interactive mode
+- Multiple projects
+- Multiple Pipelines
+- Fail fast
+
+
 Installation:
 
 `gem install ski`
@@ -80,3 +88,4 @@ targets:
 * Add functionality for variables (:prompts, :my_var etc)
 * Make use of pipeline targets in code
 * Add functionality for secrets and ssh keys (stored somewhere on a safe place not in your project dir)
+* Improve command line (ski run bonumco/deployment or something..)
