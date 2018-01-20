@@ -1,7 +1,7 @@
 # Ski
 ### A automation framework made for portability
 
-Features:
+### Features:
 
 - Interactive mode
 - Multiple projects
@@ -36,9 +36,9 @@ pipelines:
       show-space-used:
         description: Show the whole space
         command: du -sch .
-      sleep-5:
-        description: Ping google exactly one time
-        command: sleep 5
+      get-google-infos:
+        description: Curl google for header information
+        command: curl -I www.google.de
       check-processes:
         description: Check processes running of port 3000
         command: lsof -i :3000
@@ -68,8 +68,8 @@ pipelines:
         command: echo 'Hey dear, the deployment was successfull. Have a nice day! :)'
     catch:
       greet:
-        description: Wish a happy day
-        command: echo 'Hey dear, the deployment was successfull. Have a nice day! :)'
+        description: Something went wrong
+        command: echo 'Oh man! Something went horribly wrong!'
 targets:
   local:
     ip: 192.168.0.1
@@ -81,7 +81,7 @@ targets:
 3. Run:
 `ski -P your-project -p build`
 
-# Todo
+### Todo
 
 * Add functionality for remote tasks
 * Add functionality for prompts (like configurable 'are you sure' etc)
